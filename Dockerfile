@@ -1,8 +1,5 @@
 FROM node:20-alpine
 
-ARG UID=1000
-ARG GID=1000
-
 WORKDIR /app
 
 COPY package*.json ./
@@ -11,11 +8,10 @@ RUN npm install
 
 COPY . .
 
-# Utiliser UID/GID numériques pour éviter les conflits de user/group dans l'image de base.
 RUN mkdir -p /app/node_modules && \
-    chown -R ${UID}:${GID} /app
+    chown -R node:node /app
 
-USER ${UID}:${GID}
+USER node
 
 EXPOSE 3001
 
