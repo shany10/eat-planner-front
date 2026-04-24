@@ -1,13 +1,25 @@
 {
   "editor.formatOnSave": true,
-  "editor.codeActionsOnSave": {
-    "source.fixAll.eslint": "explicit"
+  "editor.formatOnSaveMode": "file",
+  "editor.defaultFormatter": "esbenp.prettier-vscode",
+  "[vue]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode",
+    "editor.formatOnSave": true
   },
+  "editor.formatOnSaveTimeout": 10000,
+  "prettier.prettierPath": "./node_modules/prettier",
+  "prettier.configPath": ".prettierrc",
   "eslint.validate": [
     "javascript",
     "javascriptreact",
     "typescript",
     "typescriptreact",
     "vue"
-  ]
+  ],
+  "eslint.useFlatConfig": true,
+  "tailwindCSS.emmetCompletions": true,
+  "tailwindCSS.includeLanguages": {
+    "vue": "html"
+  },
+  "tailwindCSS.experimental.configFile": "tailwind.config.cjs"
 }

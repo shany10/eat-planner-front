@@ -1,9 +1,48 @@
+# Dependencies & package manager caches
 node_modules
+.pnpm-store
+.yarn
+.yarn-cache
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Nuxt/Vite build outputs & caches
 .nuxt
 .output
 dist
+.cache
+.vite
+coverage
+*.tsbuildinfo
+.eslintcache
+
+# Git / CI metadata
 .git
 .github
+
+# Editor / OS files
 .vscode
+.idea
+*.swp
+*.swo
+.DS_Store
+Thumbs.db
+
+# Logs
 *.log
+
+# Local environment files (keep .env.example in repo)
 .env
+.env.*
+!.env.example
+
+# Docs and local tooling configs (not required to run the app)
+README.md
+LICENSE
+docker-compose.yml
+docker-compose.*.yml
+renovate.json
+pnpm-lock.yaml
+pnpm-workspace.yaml

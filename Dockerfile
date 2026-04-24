@@ -1,18 +1,19 @@
-FROM node:20-alpine
+FROM node:22-alpine
+
+RUN apk add --no-cache su-exec
 
 WORKDIR /app
 
-COPY package*.json ./
+COPY package.json package-lock.json ./
 
-RUN npm install
+RUN npm ci
 
 COPY . .
 
-RUN mkdir -p /app/node_modules && \
-    chown -R node:node /app
+COPY docker-entrypoint.sh /usr/local/bin/docker-entrypoint.sh
+RUN chmod +x /usr/local/bin/docker-entrypoint.sh
 
-USER node
+EXPOSE 3000
 
-EXPOSE 3001
-
-CMD ["npm", "run", "dev"]
+ENTRYPOINT ["/usr/local/bin/docker-entrypoint.sh"]
+CMD ["dev"]

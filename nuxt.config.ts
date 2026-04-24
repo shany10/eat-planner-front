@@ -1,30 +1,29 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
+const backendUrl =
+  (globalThis as any).process?.env?.BACKEND_URL ?? "http://backend:3000";
+
+declare const defineNuxtConfig: (config: unknown) => unknown;
+
 export default defineNuxtConfig({
+  modules: ["@nuxt/eslint", "@pinia/nuxt", "@nuxtjs/tailwindcss"],
 
-  modules: ['@nuxt/eslint', '@nuxt/ui'],
-
-  pages: false,
-
-  devtools: {
-    enabled: true
+  tailwindcss: {
+    cssPath: "~/assets/css/tailwind.css",
+    configPath: "tailwind.config.cjs",
   },
 
-  css: ['~/assets/css/tailwind.css'],
-
-  // css: ['~/assets/css/main.css'],
-
-  devServer: {
-    host: '0.0.0.0',
-    port: 3001
+  vite: {
+    cacheDir: "/tmp/vite",
   },
-  compatibilityDate: '2025-01-15',
 
-  eslint: {
-    config: {
-      stylistic: {
-        commaDangle: 'never',
-        braceStyle: '1tbs'
-      }
-    }
-  }
-})
+  nitro: {
+    routeRules: {
+      "/api/**": {
+        proxy: `${backendUrl}/**`,
+      },
+    },
+  },
+
+  compatibilityDate: "2025-07-15",
+  devtools: { enabled: true },
+});
