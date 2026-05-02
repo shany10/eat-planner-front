@@ -1,12 +1,5 @@
 import { z } from "zod";
 
-type Issues = {
-  expected: string;
-  code: string;
-  path: string[];
-  message: string;
-};
-
 export const createUserBody = z.object({
   firstname: z
     .string()
@@ -19,21 +12,21 @@ export const createUserBody = z.object({
   email: z.email("email invalide"),
   number: z.string().min(7, "Numéro invalide"),
   password: z.string().min(8, "mot de passe trop court"),
+  role: z.enum(["admin", "manager"]),
+  active: z.boolean().optional().default(true),
 });
 
-export interface UserLoginType {
-  id: number;
-  firstname: string;
-  lastname: string;
-  email: string;
-  role: "admin" | "manager";
-  restaurantId: number | null;
-  restaurantName: string | null;
-}
+export const updateUserBody = createUserBody
+  .partial()
+  .refine((obj) => Object.keys(obj).length > 0, {
+    message: "Au moins un champ est requis",
+  });
 
-export interface UserLoginErrorType {
-  error: string;
-  issues: Issues[];
-}
+export const authUserBody = z.object({
+  email: z.email("Email invalide"),
+  password: z.string().min(1, "Le mot de passe est requis"),
+});
 
 export type CreateUserInput = z.infer<typeof createUserBody>;
+export type UpdateUserInput = z.infer<typeof updateUserBody>;
+export type AuthUserInput = z.infer<typeof authUserBody>;

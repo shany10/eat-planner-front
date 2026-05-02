@@ -1,11 +1,17 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
 const backendUrl =
-  (globalThis as any).process?.env?.BACKEND_URL ?? "http://backend:3000";
+  (globalThis as any).process?.env?.BACKEND_URL ?? "http://backend:3000/api";
 
 declare const defineNuxtConfig: (config: unknown) => unknown;
 
 export default defineNuxtConfig({
   modules: ["@nuxt/eslint", "@pinia/nuxt", "@nuxtjs/tailwindcss"],
+
+  runtimeConfig: {
+    public: {
+      apiBaseUrl: process.env.NUXT_PUBLIC_API_BASE_URL || "/api",
+    },
+  },
 
   tailwindcss: {
     cssPath: "~/assets/css/tailwind.css",

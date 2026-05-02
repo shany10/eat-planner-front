@@ -1,22 +1,50 @@
+import type {
+  UserLoginType,
+  CreateUserInput,
+  UserLoginErrorType,
+} from "../type/userType";
 
-
-import type { User } from "../type/userType";
-
+type UserLoginResponse = {
+  token: string;
+  id: string;
+};
 
 export const useAuthStore = defineStore("auth", () => {
-  const { $fetch } = useNuxtApp();
-
-  const user = ref<User | null>(null);
+  const user = ref<UserLoginType | UserLoginErrorType | null>(null);
   const loading = ref(false);
+  const tokenCookie = useCookie<string | null>("access_token", {
+    sameSite: "lax",
+    secure: process.env.NODE_ENV === "production",
+  });
+
+  const token = computed(() => tokenCookie.value ?? null);
+
+  function isUser(
+    value: UserLoginType | UserLoginErrorType | null,
+  ): value is UserLoginType {
+    return !!value && typeof value === "object" && "role" in value;
+  }
 
   async function login(email: string, password: string) {
     loading.value = true;
     try {
-      const data = await $fetch<User>("/api/auth/login", {
+      const data = await $fetch<UserLoginResponse>("/api/auth/login", {
         method: "POST",
         body: { email, password },
       });
-      user.value = data;
+      tokenCookie.value = data.token ?? null;
+    } finally {
+      loading.value = false;
+    }
+  }
+
+  async function register(form: CreateUserInput) {
+    loading.value = true;
+    try {
+      await $fetch("/api/auth/register", {
+        method: "POST",
+        body: form,
+      });
     } finally {
       loading.value = false;
     }
@@ -24,9 +52,13 @@ export const useAuthStore = defineStore("auth", () => {
 
   async function fetchMe() {
     try {
-      const headers = useRequestHeaders(["cookie"]);
-      const data = await $fetch<User>("/api/auth/me", { headers });
-      user.value = data;
+      const headers: Record<string, string> = {
+        ...(import.meta.server ? useRequestHeaders(["cookie"]) : {}),
+      };
+      if (token.value) {
+        headers.Authorization = `Bearer ${token.value}`;
+      }
+      await $fetch<UserLoginType>("/api/auth/me", { headers });
     } catch {
       user.value = null;
     }
@@ -35,18 +67,29 @@ export const useAuthStore = defineStore("auth", () => {
   async function logout() {
     try {
       await $fetch("/api/auth/logout", { method: "POST" });
-    } catch {
-      // Cookie will be cleared server-side regardless
     } finally {
+      tokenCookie.value = null;
       user.value = null;
       navigateTo("/auth/login");
     }
   }
 
-  const isAdmin = computed(() => user.value?.role === "ADMIN");
+  const isAdmin = computed(() =>
+    isUser(user.value) ? user.value.role === "admin" : false,
+  );
   const isManager = computed(() =>
-    ["ADMIN", "MANAGER"].includes(user.value?.role ?? ""),
+    isUser(user.value) ? ["admin", "manager"].includes(user.value.role) : false,
   );
 
-  return { user, loading, login, fetchMe, logout, isAdmin, isManager };
+  return {
+    user,
+    loading,
+    token,
+    login,
+    register,
+    fetchMe,
+    logout,
+    isAdmin,
+    isManager,
+  };
 });
