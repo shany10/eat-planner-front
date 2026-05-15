@@ -1,6 +1,22 @@
-// https://nuxt.com/docs/api/configuration/nuxt-config
-const backendUrl =
-  (globalThis as any).process?.env?.BACKEND_URL ?? "http://backend:3000/api";
+const backendUrl = process.env.BACKEND_URL ?? "http://backend:3000/api";
+
+function normalizeBackend(urlLike: string): {
+  origin: string;
+  apiPrefix: string;
+} {
+  try {
+    const url = new URL(urlLike);
+    const pathname = url.pathname.replace(/\/+$/, "");
+    return {
+      origin: url.origin,
+      apiPrefix: pathname && pathname !== "/" ? pathname : "/api",
+    };
+  } catch {
+    return { origin: urlLike.replace(/\/+$/, ""), apiPrefix: "/api" };
+  }
+}
+
+const backend = normalizeBackend(backendUrl);
 
 declare const defineNuxtConfig: (config: unknown) => unknown;
 
@@ -23,9 +39,19 @@ export default defineNuxtConfig({
   },
 
   nitro: {
+    // In dev, `routeRules.proxy` is not consistently applied depending on runtime.
+    // `devProxy` ensures `/api/*` is forwarded while running `nuxt dev`.
+    devProxy: {
+      "/api": {
+        // Nitro devProxy strips the mount prefix (`/api`) before forwarding.
+        // Point the target at the backend API base so `/api/*` becomes `${apiPrefix}/*`.
+        target: `${backend.origin}${backend.apiPrefix}`,
+        changeOrigin: true,
+      },
+    },
     routeRules: {
       "/api/**": {
-        proxy: `${backendUrl}/**`,
+        proxy: `${backend.origin}${backend.apiPrefix}/**`,
       },
     },
   },

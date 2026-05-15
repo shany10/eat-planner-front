@@ -6,7 +6,7 @@
   />
 
   <aside
-    class="fixed left-0 top-0 z-40 flex h-full w-72 flex-col bg-color-primary text-white transition-all duration-300 lg:w-64"
+    class="flex h-full w-72 flex-col bg-color-primary text-white transition-all lg:w-64"
     :class="[
       mobileOpen ? 'translate-x-0' : '-translate-x-full',
       { 'lg:!w-16': collapsed },
@@ -51,7 +51,7 @@
         <button
           class="hidden rounded p-1 hover:bg-white/10 lg:block"
           aria-label="Réduire la barre latérale"
-          @click="$emit('toggle')"
+          @click="toggleSidebar"
         >
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -77,15 +77,15 @@
       :class="collapsed ? 'overflow-visible' : 'overflow-y-auto'"
     >
       <NuxtLink
-        v-for="item in visibleItems"
-        :key="item.to"
-        :to="item.to"
+        v-for="item in navItems"
+        :key="item.href"
+        :to="item.href"
         class="group relative flex items-center border-r-4 border-transparent py-3 text-sm transition-colors hover:bg-white/10"
         :class="collapsed && !mobileOpen ? 'justify-center px-0' : 'px-4'"
         active-class="bg-white/15 !border-color-secondary"
         @click="$emit('closeMobile')"
       >
-        <component :is="item.icon" class="h-5 w-5 flex-shrink-0" />
+        <UiIcon :type="item.icon" />
         <span v-if="!collapsed || mobileOpen" class="ml-3">{{
           item.label
         }}</span>
@@ -104,13 +104,14 @@
         <div
           class="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full bg-color-secondary text-sm font-bold text-color-primary"
         >
-          {{ userInitials }}
+          <!-- {{ userInitials }} -->
+          userInitials
         </div>
         <div v-if="!collapsed || mobileOpen" class="ml-3 overflow-hidden">
-          <p class="truncate text-sm font-medium">{{ userName }}</p>
+          <p class="truncate text-sm font-medium">userName</p>
           <span
             class="inline-block rounded-full bg-color-secondary/20 px-2 py-0.5 text-xs text-color-secondary"
-            >{{ userRole }}</span
+            >userRole</span
           >
         </div>
       </div>
@@ -119,109 +120,27 @@
 </template>
 
 <script setup lang="ts">
-import IconDashboard from "~/components/icons/IconDashboard.vue";
-import IconIngredient from "~/components/icons/IconIngredient.vue";
-import IconDish from "~/components/icons/IconDish.vue";
-import IconCharge from "~/components/icons/IconCharge.vue";
-import IconSale from "~/components/icons/IconSale.vue";
-import IconForecast from "~/components/icons/IconForecast.vue";
-import IconUsers from "~/components/icons/IconUsers.vue";
-import IconSupplier from "~/components/icons/IconSupplier.vue";
-import IconStock from "~/components/icons/IconStock.vue";
-import IconEstimate from "~/components/icons/IconEstimate.vue";
-import IconSettings from "~/components/icons/IconSettings.vue";
+import { navItems } from "~/mock/navItems";
 
-interface Props {
-  collapsed: boolean;
-  mobileOpen: boolean;
-}
-
-defineProps<Props>();
 defineEmits<{ toggle: []; closeMobile: [] }>();
 
-const authStore = useAuthStore();
+// const authStore = useAuthStore();
 
-const userName = computed(() => {
-  const u = authStore.user;
-  return u ? `${u.first_name} ${u.last_name}` : "";
-});
-const userRole = computed(() => authStore.user?.role ?? "");
-const userInitials = computed(() => {
-  const u = authStore.user;
-  if (!u) return "";
-  return `${u.first_name?.[0] ?? ""}${u.last_name?.[0] ?? ""}`.toUpperCase();
-});
+// const userName = computed(() => {
+//   const u = authStore.user;
+//   return u ? `${u.firstname} ${u.lastname}` : "";
+// });
+// const userRole = computed(() => authStore.user?.role ?? "");
+// const userInitials = computed(() => {
+//   const u = authStore.user;
+//   if (!u) return "";
+//   return `${u.first_name?.[0] ?? ""}${u.last_name?.[0] ?? ""}`.toUpperCase();
+// });
 
-const navItems = [
-  {
-    to: "/dashboard",
-    label: "Tableau de bord",
-    icon: IconDashboard,
-    roles: ["ADMIN", "MANAGER", "EMPLOYEE"],
-  },
-  {
-    to: "/dashboard/ingredients",
-    label: "Ingrédients",
-    icon: IconIngredient,
-    roles: ["ADMIN", "MANAGER"],
-  },
-  {
-    to: "/dashboard/suppliers",
-    label: "Fournisseurs",
-    icon: IconSupplier,
-    roles: ["ADMIN", "MANAGER"],
-  },
-  {
-    to: "/dashboard/stock",
-    label: "Stock",
-    icon: IconStock,
-    roles: ["ADMIN", "MANAGER"],
-  },
-  {
-    to: "/dashboard/estimates",
-    label: "Estimation",
-    icon: IconEstimate,
-    roles: ["ADMIN", "MANAGER"],
-  },
-  {
-    to: "/dashboard/dishes",
-    label: "Plats",
-    icon: IconDish,
-    roles: ["ADMIN", "MANAGER"],
-  },
-  {
-    to: "/dashboard/charges",
-    label: "Charges",
-    icon: IconCharge,
-    roles: ["ADMIN", "MANAGER"],
-  },
-  {
-    to: "/dashboard/sales",
-    label: "Ventes",
-    icon: IconSale,
-    roles: ["ADMIN", "MANAGER", "EMPLOYEE"],
-  },
-  {
-    to: "/dashboard/forecasts",
-    label: "Prévisions",
-    icon: IconForecast,
-    roles: ["ADMIN", "MANAGER"],
-  },
-  {
-    to: "/dashboard/users",
-    label: "Utilisateurs",
-    icon: IconUsers,
-    roles: ["ADMIN"],
-  },
-  {
-    to: "/dashboard/settings",
-    label: "Mon restaurant",
-    icon: IconSettings,
-    roles: ["ADMIN", "MANAGER"],
-  },
-];
+const collapsed = ref(false);
+const mobileOpen = ref(false);
 
-const visibleItems = computed(() =>
-  navItems.filter((item) => item.roles.includes(authStore.user?.role ?? "")),
-);
+const toggleSidebar = () => {
+  collapsed.value = collapsed.value ? false : true;
+};
 </script>
