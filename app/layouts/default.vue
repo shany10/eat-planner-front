@@ -4,6 +4,7 @@
       <SideBare
         :collapsed="sidebarCollapsed"
         :mobile-open="mobileSidebarOpen"
+        @toggle="sidebarCollapsed = !sidebarCollapsed"
         @close-mobile="closeMobileSidebar"
       />
     </header>

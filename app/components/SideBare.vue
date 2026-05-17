@@ -104,14 +104,13 @@
         <div
           class="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full bg-color-secondary text-sm font-bold text-color-primary"
         >
-          <!-- {{ userInitials }} -->
-          userInitials
+          {{ userInitials }}
         </div>
         <div v-if="!collapsed || mobileOpen" class="ml-3 overflow-hidden">
-          <p class="truncate text-sm font-medium">userName</p>
+          <p class="truncate text-sm font-medium">{{ userName }}</p>
           <span
             class="inline-block rounded-full bg-color-secondary/20 px-2 py-0.5 text-xs text-color-secondary"
-            >userRole</span
+            >{{ userRole }}</span
           >
         </div>
       </div>
@@ -122,25 +121,36 @@
 <script setup lang="ts">
 import { navItems } from "~/mock/navItems";
 
-defineEmits<{ toggle: []; closeMobile: [] }>();
+const emit = defineEmits<{ toggle: []; closeMobile: [] }>();
 
-// const authStore = useAuthStore();
+const props = withDefaults(
+  defineProps<{
+    collapsed?: boolean;
+    mobileOpen?: boolean;
+  }>(),
+  {
+    collapsed: false,
+    mobileOpen: false,
+  },
+);
 
-// const userName = computed(() => {
-//   const u = authStore.user;
-//   return u ? `${u.firstname} ${u.lastname}` : "";
-// });
-// const userRole = computed(() => authStore.user?.role ?? "");
-// const userInitials = computed(() => {
-//   const u = authStore.user;
-//   if (!u) return "";
-//   return `${u.first_name?.[0] ?? ""}${u.last_name?.[0] ?? ""}`.toUpperCase();
-// });
+const authStore = useAuthStore();
 
-const collapsed = ref(false);
-const mobileOpen = ref(false);
+const userName = computed(() => {
+  const u = authStore.user;
+  return u ? `${u.firstname} ${u.lastname}` : "";
+});
+const userRole = computed(() => authStore.user?.role ?? "");
+const userInitials = computed(() => {
+  const u = authStore.user;
+  if (!u) return "";
+  return `${u.firstname?.[0] ?? ""}${u.lastname?.[0] ?? ""}`.toUpperCase();
+});
+
+const collapsed = computed(() => props.collapsed);
+const mobileOpen = computed(() => props.mobileOpen);
 
 const toggleSidebar = () => {
-  collapsed.value = collapsed.value ? false : true;
+  emit("toggle");
 };
 </script>

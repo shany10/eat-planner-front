@@ -59,7 +59,7 @@ async function login() {
   clear();
   try {
     await authStore.login(form.email, form.password);
-    await navigateTo("/dashboard");
+    // await navigateTo("/dashboard");
   } catch (e: unknown) {
     parseError(e);
   }

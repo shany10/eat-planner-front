@@ -7,12 +7,12 @@ export const navItems: NavItem[] = [
     icon: "dashboard",
   },
   {
-    href: "/ingredients",
+    href: "/ingredient",
     label: "Ingrédients",
     icon: "ingredient",
   },
   {
-    href: "/suppliers",
+    href: "/supplier",
     label: "Fournisseurs",
     icon: "supplier",
   },
@@ -22,38 +22,38 @@ export const navItems: NavItem[] = [
     icon: "stock",
   },
   {
-    href: "/estimates",
+    href: "/estimate",
     label: "Estimation",
     icon: "estimate",
   },
   {
-    href: "/dishes",
+    href: "/dish",
     label: "Plats",
     icon: "dish",
   },
   {
-    href: "/charges",
+    href: "/charge",
     label: "Charges",
     icon: "charge",
   },
   {
-    href: "/sales",
+    href: "/sale",
     label: "Ventes",
     icon: "sale",
   },
   {
-    href: "/forecasts",
+    href: "/forecast",
     label: "Prévisions",
     icon: "forecast",
   },
   {
-    href: "/users",
+    href: "/user",
     label: "Utilisateurs",
     icon: "user",
   },
   {
-    href: "/settings",
-    label: "Mon restaurant",
+    href: "/setting",
+    label: "Paramètres",
     icon: "settings",
   },
 ];

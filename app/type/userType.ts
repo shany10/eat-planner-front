@@ -27,8 +27,6 @@ export interface UserLoginType {
   lastname: string;
   email: string;
   role: "admin" | "manager";
-  restaurantId: number | null;
-  restaurantName: string | null;
 }
 
 export interface UserLoginErrorType {

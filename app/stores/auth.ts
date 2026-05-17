@@ -1,16 +1,20 @@
-import type {
-  UserLoginType,
-  CreateUserInput,
-  UserLoginErrorType,
-} from "../type/userType";
+import type { UserLoginType, CreateUserInput } from "../type/userType";
+
+type user = {
+  id: number;
+  firstname: string;
+  lastname: string;
+  email: string;
+  role: "admin" | "manager";
+};
 
 type UserLoginResponse = {
+  user: user;
   token: string;
-  id: string;
 };
 
 export const useAuthStore = defineStore("auth", () => {
-  const user = ref<UserLoginType | UserLoginErrorType | null>(null);
+  const user = ref<UserLoginType | null>(null);
   const loading = ref(false);
   const tokenCookie = useCookie<string | null>("access_token", {
     sameSite: "lax",
@@ -19,9 +23,7 @@ export const useAuthStore = defineStore("auth", () => {
 
   const token = computed(() => tokenCookie.value ?? null);
 
-  function isUser(
-    value: UserLoginType | UserLoginErrorType | null,
-  ): value is UserLoginType {
+  function isUser(value: UserLoginType | null): value is UserLoginType {
     return !!value && typeof value === "object" && "role" in value;
   }
 
@@ -33,6 +35,8 @@ export const useAuthStore = defineStore("auth", () => {
         body: { email, password },
       });
       tokenCookie.value = data.token ?? null;
+      user.value = data.user;
+      console.log(user.value);
     } finally {
       loading.value = false;
     }
